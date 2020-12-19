@@ -108,3 +108,8 @@ Please implement load testing to ensure your service can handle a high amount of
 To Show API Swagger info:
 
 Run server and open url `localhost:8010/docs` in browser.
+
+Pagination 
+
+I add basic pagination with LIMIT OFFSET on big numbers of record and big OFFSET this query will degrade in question of speed.
+So on big data set can be made search optimization with indexes. For this small test i didnt do it.

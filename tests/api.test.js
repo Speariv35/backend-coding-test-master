@@ -114,9 +114,9 @@ describe('API tests', () => {
     });
   });
   describe('GET /rides', () => {
-    it('Get All rides from DB', (done) => {
+    it('Get All rides from DB with pagination', (done) => {
       request(app)
-        .get('/rides')
+        .get('/rides/1/1')
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
@@ -130,6 +130,17 @@ describe('API tests', () => {
           assert.strictEqual(response.body[0].driverName, req.driver_name);
           assert.strictEqual(response.body[0].driverVehicle, req.driver_vehicle);
           assert.strictEqual(typeof response.body[0].created, 'string');
+          done();
+        });
+    });
+    it('Should return error if record for second page not found', (done) => {
+      request(app)
+        .get('/rides/2/2')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((response) => {
+          assert.strictEqual(response.body.error_code, notFoundErr, 'Error');
+          assert.strictEqual(response.body.message, notFoundErrMsg, 'Error Message');
           done();
         });
     });
@@ -154,7 +165,7 @@ describe('API tests', () => {
           done();
         });
     });
-    it('Should return error if record not dound', (done) => {
+    it('Should return error if record not found', (done) => {
       request(app)
         .get('/rides/2')
         .expect('Content-Type', /json/)

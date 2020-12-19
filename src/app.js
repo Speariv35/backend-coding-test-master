@@ -243,10 +243,21 @@ module.exports = (db) => {
   /**
    * @swagger
    *
-   * /rides:
+   * /rides/{page}/{pageSize}:
    *   get:
    *      summary: Get rides
    *      tags: [Rides]
+   *      parameters:
+   *            - in: path
+   *              name: page
+   *              schema:
+   *              type: integer
+   *              description: Page to query from DB (default 1)
+   *            - in: path
+   *              name: pageSize
+   *              schema:
+   *              type: integer
+   *              description: Number of records on page (default 10)
    *      responses:
    *          "200":
    *              description: Rides from DB.
@@ -256,8 +267,11 @@ module.exports = (db) => {
    *                      $ref: '#/components/schemas/Rides'
    *
    */
-  app.get('/rides', (req, res) => {
-    db.all('SELECT * FROM Rides', (err, rows) => {
+  app.get('/rides/:page/:pageSize', (req, res) => {
+    const page = Number(req.params?.page) > 0 ? req.params?.page : 1;
+    const pageSize = Number(req.params.pageSize) || 10;
+    const offset = ((page - 1) * pageSize);
+    db.all(`SELECT * FROM Rides LIMIT ${pageSize} OFFSET ${offset}`, (err, rows) => {
       if (err) {
         return res.send({
           error_code: 'SERVER_ERROR',
