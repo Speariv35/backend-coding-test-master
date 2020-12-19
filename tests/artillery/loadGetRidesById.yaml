@@ -1,0 +1,11 @@
+config:
+  target: "http://localhost:8010"
+  ensure:
+    p99: 50
+  phases:
+    - duration: 30
+      arrivalRate: 100
+scenarios:
+  - flow:
+      - get:
+          url: "/rides/12"

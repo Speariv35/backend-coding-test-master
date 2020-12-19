@@ -103,19 +103,57 @@ Please implement load testing to ensure your service can handle a high amount of
 
 
 
+
+
+### My Comments
+
 #### Instructions for Swagger docs
  
 To Show API Swagger info:
 
 Run server and open url `localhost:8010/docs` in browser.
 
-Pagination 
+But now i understood how decorators are cool for swagger in nest.js
+
+  /**
+   * Play.
+   */
+  @IsEnum(GameAvailableOptions)
+  @ApiProperty({
+    description: 'Figure that user choose',
+    enum: Object.values(GameAvailableOptions),
+    example: GameAvailableOptions.scissors,
+  })
+  public readonly userChoice: GameAvailableOptions;
+
+Write swagger info in jsdoc yaml format is hell :) 
+
+#### Pagination 
 
 I add basic pagination with LIMIT OFFSET on big numbers of record and big OFFSET this query will degrade in question of speed.
 So on big data set can be made search optimization with indexes. For this small test i didnt do it.
 
-Refactoring
+#### Refactoring
 It can be splitted on right layered architecture (controller>service>repositry)
 Can be added one place of error handling, request params and body schema validation and so on ....
-But it faster to rewrite this code from the scratch in the right way :)
+But, it faster to rewrite this code from the scratch in the right way :)
 Dont add unit tests with sinon stabs of Errors from DB calls to cover errors branches.
+
+#### Load testing
+
+I dont know do i need to generate for get calls different params or not.
+So they are hardcoded, but if needed I can generate csv with random values.
+
+
+#### If interesting
+
+Not so long time ago I was making test scissors-rock-paper game on nest.js for another company.
+
+If you interested you can see it by links below.
+Web interface to play (Firebase) - https://scissors-game-front.web.app/
+Swagger API (here you can test backend API to and see all routes hosted by Heroku) -  https://scissors-game-back.herokuapp.com/api/
+
+Backend part sources is here - https://github.com/Speariv35/scissors-game-back
+
+
+
