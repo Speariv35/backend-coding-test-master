@@ -3,12 +3,12 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ["airbnb"],
-  plugins: ["babel", "import", "prettier", "jsx-a11y", "react"],
-  parser: "babel-eslint",
+  extends: ['airbnb'],
+  plugins: ['babel', 'import', 'prettier', 'jsx-a11y', 'react'],
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 6,
-    sourceType: "module",
+    sourceType: 'module',
   },
   rules: {},
 };
