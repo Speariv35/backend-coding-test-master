@@ -113,3 +113,9 @@ Pagination
 
 I add basic pagination with LIMIT OFFSET on big numbers of record and big OFFSET this query will degrade in question of speed.
 So on big data set can be made search optimization with indexes. For this small test i didnt do it.
+
+Refactoring
+It can be splitted on right layered architecture (controller>service>repositry)
+Can be added one place of error handling, request params and body schema validation and so on ....
+But it faster to rewrite this code from the scratch in the right way :)
+Dont add unit tests with sinon stabs of Errors from DB calls to cover errors branches.

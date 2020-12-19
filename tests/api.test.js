@@ -1,20 +1,11 @@
 const request = require('supertest');
 const assert = require('assert');
-
-const sqlite3 = require('sqlite3').verbose();
-
-const db = new sqlite3.Database(':memory:');
-
-const app = require('../src/app')(db);
-const buildSchemas = require('../src/schemas');
+const db = require('../src/db');
+const logger = require('../src/logger/winston');
+const constants = require('../src/constants/constants');
+const app = require('../src/app');
 
 describe('API tests', () => {
-  const notFoundErr = 'RIDES_NOT_FOUND_ERROR';
-  const validationErr = 'VALIDATION_ERROR';
-  const notFoundErrMsg = 'Could not find any rides';
-  const startLatErrMsg = 'Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively';
-  const endLatErrMsg = 'End latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively';
-  const riderNameErrMsg = 'Rider name must be a non empty string';
   const req = {
     start_lat: 0,
     start_long: 0,
@@ -26,20 +17,14 @@ describe('API tests', () => {
   };
 
   before((done) => {
-    db.serialize((err) => {
-      if (err) {
-        return done(err);
-      }
-
-      buildSchemas(db);
-
-      return done();
-    });
+    db.initDb();
+    logger.init();
+    done();
   });
 
   describe('GET /health', () => {
     it('should return health', (done) => {
-      request(app)
+      request(app())
         .get('/health')
         .expect('Content-Type', /text/)
         .expect(200, done);
@@ -48,7 +33,7 @@ describe('API tests', () => {
 
   describe('POST /rides', () => {
     it('should insert ride into DB', (done) => {
-      request(app)
+      request(app())
         .post('/rides')
         .send(req)
         .set('Accept', 'application/json')
@@ -70,52 +55,52 @@ describe('API tests', () => {
     it('Should return error if validation of start_lat not passed', (done) => {
       const newReq = { ...req };
       newReq.start_lat = -999;
-      request(app)
+      request(app())
         .post('/rides')
         .send(newReq)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
-          assert.strictEqual(response.body.error_code, validationErr, 'Error');
-          assert.strictEqual(response.body.message, startLatErrMsg, 'Error Message');
+          assert.strictEqual(response.body.error_code, constants.errorCode.validation, 'Error');
+          assert.strictEqual(response.body.message, constants.errorMessages.startLatValidation, 'Error');
           done();
         });
     });
     it('Should return error if validation of end_lat not passed', (done) => {
       const newReq = { ...req };
       newReq.end_lat = -999;
-      request(app)
+      request(app())
         .post('/rides')
         .send(newReq)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
-          assert.strictEqual(response.body.error_code, validationErr, 'Error');
-          assert.strictEqual(response.body.message, endLatErrMsg, 'Error Message');
+          assert.strictEqual(response.body.error_code, constants.errorCode.validation, 'Error');
+          assert.strictEqual(response.body.message, constants.errorMessages.endLatValidation, 'Error Message');
           done();
         });
     });
     it('Should return error if validation of rider_name not passed', (done) => {
       const newReq = { ...req };
       newReq.rider_name = '';
-      request(app)
+      request(app())
         .post('/rides')
         .send(newReq)
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
-          assert.strictEqual(response.body.error_code, validationErr, 'Error');
-          assert.strictEqual(response.body.message, riderNameErrMsg, 'Error Message');
+          assert.strictEqual(response.body.error_code, constants.errorCode.validation, 'Error');
+          assert.strictEqual(response.body.message, constants.errorMessages.riderNameValidation, 'Error Message');
           done();
         });
     });
   });
   describe('GET /rides', () => {
     it('Get All rides from DB with pagination', (done) => {
-      request(app)
+      request(app())
         .get('/rides/1/1')
         .expect('Content-Type', /json/)
         .expect(200)
@@ -134,20 +119,20 @@ describe('API tests', () => {
         });
     });
     it('Should return error if record for second page not found', (done) => {
-      request(app)
+      request(app())
         .get('/rides/2/2')
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
-          assert.strictEqual(response.body.error_code, notFoundErr, 'Error');
-          assert.strictEqual(response.body.message, notFoundErrMsg, 'Error Message');
+          assert.strictEqual(response.body.error_code, constants.errorCode.ridesNotFound, 'Error');
+          assert.strictEqual(response.body.message, constants.errorMessages.ridesNotFound, 'Error Message');
           done();
         });
     });
   });
   describe('GET /rides/:id', () => {
     it('Get rides by ID from DB', (done) => {
-      request(app)
+      request(app())
         .get('/rides/1')
         .expect('Content-Type', /json/)
         .expect(200)
@@ -166,13 +151,13 @@ describe('API tests', () => {
         });
     });
     it('Should return error if record not found', (done) => {
-      request(app)
+      request(app())
         .get('/rides/2')
         .expect('Content-Type', /json/)
         .expect(200)
         .then((response) => {
-          assert.strictEqual(response.body.error_code, notFoundErr, 'Error');
-          assert.strictEqual(response.body.message, notFoundErrMsg, 'Error Message');
+          assert.strictEqual(response.body.error_code, constants.errorCode.ridesNotFound, 'Error');
+          assert.strictEqual(response.body.message, constants.errorMessages.ridesNotFound, 'Error Message');
           done();
         });
     });
