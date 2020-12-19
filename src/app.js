@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
+const helmet = require('helmet');
 const healthRouter = require('./routers/health');
 const ridesRouter = require('./routers/rides');
 const loggerModule = require('./logger/winston');
@@ -11,6 +12,9 @@ const loggerModule = require('./logger/winston');
 const logger = loggerModule.instance;
 module.exports = () => {
   const app = express();
+
+  // Helmet
+  app.use(helmet());
 
   // Routers
   app.use('/health', healthRouter);

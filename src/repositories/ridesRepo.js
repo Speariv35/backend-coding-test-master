@@ -32,8 +32,9 @@ const insertRide = async (values) => new Promise((resolve, reject) => {
   );
 });
 
-const getRideById = async (riderId) => new Promise((resolve, reject) => db().all(
-  `SELECT * FROM Rides WHERE rideID = ${riderId}`,
+const getRideById = async (rideId) => new Promise((resolve, reject) => db().all(
+  'SELECT * FROM Rides WHERE rideID = ?',
+  rideId,
   (err, res) => {
     if (err) {
       logger().error(`Error getRideById : ${err}`);
@@ -45,7 +46,8 @@ const getRideById = async (riderId) => new Promise((resolve, reject) => db().all
 ));
 
 const getRidesWithPagination = async (pageSize, offset) => new Promise((resolve, reject) => {
-  db().all(`SELECT * FROM Rides LIMIT ${pageSize} OFFSET ${offset}`, (err, rows) => {
+  const values = [pageSize, offset];
+  db().all('SELECT * FROM Rides LIMIT ? OFFSET ?', values, (err, rows) => {
     if (err) {
       logger().error(`Error getRidesWithPagination : ${err}`);
       reject(new Error('DB error'));

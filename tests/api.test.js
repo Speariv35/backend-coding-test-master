@@ -161,5 +161,16 @@ describe('API tests', () => {
           done();
         });
     });
+    it('Should return not found error with SQL injections string', (done) => {
+      request(app())
+        .get('/rides/1 OR 1=1')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then((response) => {
+          assert.strictEqual(response.body.error_code, constants.errorCode.ridesNotFound, 'Error');
+          assert.strictEqual(response.body.message, constants.errorMessages.ridesNotFound, 'Error Message');
+          done();
+        });
+    });
   });
 });
