@@ -222,22 +222,22 @@ module.exports = (db) => {
           });
         }
 
-        db.all(
+        return db.all(
           'SELECT * FROM Rides WHERE rideID = ?',
           this.lastID,
-          (err, rows) => {
-            if (err) {
+          (error, rows) => {
+            if (error) {
               return res.send({
                 error_code: 'SERVER_ERROR',
                 message: 'Unknown error',
               });
             }
-
-            res.send(rows);
+            return res.send(rows);
           },
         );
       },
     );
+    return result;
   });
 
   /**
@@ -272,7 +272,7 @@ module.exports = (db) => {
         });
       }
 
-      res.send(rows);
+      return res.send(rows);
     });
   });
 
@@ -316,7 +316,7 @@ module.exports = (db) => {
           });
         }
 
-        res.send(rows);
+        return res.send(rows);
       },
     );
   });

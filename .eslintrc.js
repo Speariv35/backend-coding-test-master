@@ -10,5 +10,8 @@ module.exports = {
     ecmaVersion: 6,
     sourceType: 'module',
   },
-  rules: {},
+  rules: {
+    'linebreak-style': 'off',
+    'no-undef': 'warn',
+  },
 };
